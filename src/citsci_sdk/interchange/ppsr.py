@@ -102,7 +102,7 @@ def project_to_ppsr_core(project: Project, **overrides: Any) -> ppsr_core.Projec
 def project_from_ppsr_core(source: ppsr_core.Project) -> Project:
     """Map a ``ppsr_core.Project`` back to a CitSci :class:`Project` (overlapping fields)."""
     return Project(
-        id=_as_int(source.project_id),
+        id=_as_str(source.project_id),
         name=source.project_name,
         goals=source.project_aim,
         description=source.project_description,
@@ -133,7 +133,7 @@ def observation_to_ppsr_core(
 def observation_from_ppsr_core(source: ppsr_core.ObservationBase) -> Observation:
     """Map a ``ppsr_core.ObservationBase`` back to a CitSci :class:`Observation`."""
     return Observation(
-        id=_as_int(source.observation_id),
+        id=_as_str(source.observation_id),
         observed_at=source.event_date,
         lng_lat=_lng_lat_from_coords(source.decimal_longitude, source.decimal_latitude),
     )
@@ -159,7 +159,7 @@ def datasheet_to_ppsr_core(datasheet: Datasheet, **overrides: Any) -> ppsr_core.
 def datasheet_from_ppsr_core(source: ppsr_core.DatasetMetadata) -> Datasheet:
     """Map a ``ppsr_core.DatasetMetadata`` back to a CitSci :class:`Datasheet`."""
     return Datasheet(
-        id=_as_int(source.identifier),
+        id=_as_str(source.identifier),
         name=source.title,
         instructions=source.abstract,
         created_at=source.date_submitted,
@@ -170,11 +170,9 @@ def datasheet_from_ppsr_core(source: ppsr_core.DatasetMetadata) -> Datasheet:
 # -- helpers ----------------------------------------------------------------------
 
 
-def _as_int(value: Any) -> int | None:
-    try:
-        return int(value)
-    except (TypeError, ValueError):
-        return None
+def _as_str(value: Any) -> str | None:
+    """CitSci resource ids are UUID strings; preserve them as-is (None stays None)."""
+    return None if value is None else str(value)
 
 
 def _reference_id(ref: Any) -> str | None:

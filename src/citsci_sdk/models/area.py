@@ -14,7 +14,7 @@ from .base import CitSciModel, Reference
 class Area(CitSciModel):
     """A named location (point) associated with a project."""
 
-    id: int | None = None
+    id: str | None = None
     name: str | None = None
     # Point geometry as supplied to the API (WKT/coordinate string).
     lng_lat: str | None = None
