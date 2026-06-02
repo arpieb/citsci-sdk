@@ -22,6 +22,10 @@ jobs:
       # Use the image's Python instead of downloading a managed one.
       UV_PYTHON_PREFERENCE: only-system
     steps:
+      # The uv slim image has no git, which uv needs to fetch the ppsr-core git dependency.
+      - name: Install git
+        run: apt-get update && apt-get install -y --no-install-recommends git && rm -rf /var/lib/apt/lists/*
+
       - uses: actions/checkout@v4
 
       - name: Install dependencies
