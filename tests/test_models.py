@@ -12,7 +12,7 @@ BASE = "https://api.citsci.org"
 
 def test_project_parses_camelcase_and_round_trips():
     raw = {
-        "id": 7,
+        "id": "a4ea86cb-d85b-4c56-be3e-5e23c8ed66b9",
         "name": "Backyard Birds",
         "urlField": "backyard-birds",
         "isZooniverse": True,
@@ -34,14 +34,14 @@ def test_project_parses_camelcase_and_round_trips():
 
 
 def test_extra_fields_are_preserved():
-    obs = Observation.model_validate({"id": 1, "someFutureField": "kept"})
+    obs = Observation.model_validate({"id": "1", "someFutureField": "kept"})
     assert obs.model_dump(by_alias=True)["someFutureField"] == "kept"
 
 
 @respx.mock
 def test_create_sends_camelcase_json_body():
     route = respx.post(f"{BASE}/observations").mock(
-        return_value=httpx.Response(201, json={"id": 99})
+        return_value=httpx.Response(201, json={"id": "99"})
     )
     with CitSciClient(token="t") as client:
         created = client.observations.create(
@@ -53,13 +53,13 @@ def test_create_sends_camelcase_json_body():
     sent = json.loads(route.calls.last.request.content)
     assert sent == {"lngLat": "POINT(-105 40)", "durationSetup": 1.5}
     assert route.calls.last.request.headers["Content-Type"] == "application/json"
-    assert created.id == 99
+    assert created.id == "99"
 
 
 @respx.mock
 def test_patch_uses_merge_patch_content_type():
     route = respx.patch(f"{BASE}/observations/5").mock(
-        return_value=httpx.Response(200, json={"id": 5, "isPrivate": True})
+        return_value=httpx.Response(200, json={"id": "5", "isPrivate": True})
     )
     with CitSciClient(token="t") as client:
         client.observations.patch(5, {"isPrivate": True})

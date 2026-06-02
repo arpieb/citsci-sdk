@@ -25,7 +25,7 @@ def test_coords_parsing(value, expected):
 
 def test_observation_round_trips_through_ppsr_core():
     obs = Observation(
-        id=10,
+        id="10",
         observed_at=datetime.fromisoformat("2024-05-01T12:00:00+00:00"),
         lng_lat="POINT(-105.1 40.5)",
     )
@@ -37,7 +37,7 @@ def test_observation_round_trips_through_ppsr_core():
     assert std.decimal_latitude == 40.5
 
     back = Observation.from_ppsr_core(std)
-    assert back.id == 10
+    assert back.id == "10"
     assert back.lng_lat == "POINT(-105.1 40.5)"
     assert back.observed_at == obs.observed_at
 
@@ -45,7 +45,7 @@ def test_observation_round_trips_through_ppsr_core():
 def test_to_ppsr_core_reports_missing_required_fields():
     # PPSR Core's Project requires controlled vocabularies / contact info the CitSci API
     # never supplies, so conversion without overrides raises a helpful error.
-    project = Project(id=1, name="Birds", goals="count", description="desc")
+    project = Project(id="1", name="Birds", goals="count", description="desc")
     with pytest.raises(CitSciConfigError) as exc:
         project.to_ppsr_core()
     msg = str(exc.value)
@@ -62,7 +62,7 @@ def test_datasheet_extracts_project_id_from_iri():
     assert _reference_id({"id": 7}) == "7"
     assert _reference_id(None) is None
 
-    ds = Datasheet(id=3, name="Form", instructions="how", project="/projects/42")
+    ds = Datasheet(id="3", name="Form", instructions="how", project="/projects/42")
     with pytest.raises(CitSciConfigError):
         # DatasetMetadata also has required fields beyond the overlap; just confirm the
         # mapper runs and surfaces the missing ones rather than crashing on project_id.

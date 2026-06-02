@@ -14,7 +14,7 @@ if TYPE_CHECKING:  # pragma: no cover - typing only
 class Observation(CitSciModel):
     """A single observation submitted to a project/datasheet."""
 
-    id: int | None = None
+    id: str | None = None
     project: Reference | None = None
     datasheet: Reference | None = None
     user: Reference | None = None

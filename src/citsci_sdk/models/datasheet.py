@@ -18,7 +18,7 @@ if TYPE_CHECKING:  # pragma: no cover - typing only
 class Datasheet(CitSciModel):
     """The form/protocol used to collect observations for a project."""
 
-    id: int | None = None
+    id: str | None = None
     name: str | None = None
     instructions: str | None = None
     project: Reference | None = None

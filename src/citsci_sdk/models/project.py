@@ -14,7 +14,7 @@ if TYPE_CHECKING:  # pragma: no cover - typing only
 class Project(CitSciModel):
     """A CitSci project (a citizen-science effort that collects observations)."""
 
-    id: int | None = None
+    id: str | None = None
     name: str | None = None
     description: str | None = None
     goals: str | None = None
@@ -43,20 +43,23 @@ class Project(CitSciModel):
     # Integrations.
     is_airtable: bool | None = None
     is_zooniverse: bool | None = None
-    zooniverse_id: str | None = None
+    zooniverse_id: int | None = None
     is_sci_starter: bool | None = None
     is_sci_starter_participation: bool | None = None
-    sci_starter_id: str | None = None
+    sci_starter_id: int | None = None
     is_strip_image_metadata: bool | None = None
 
     approve_contacts: bool | None = None
-    topics: list[Reference] | None = None
-    tasks: list[Reference] | None = None
+    # The live API returns ``topics`` as a list of strings (the spec mislabels it a string).
+    topics: list[str] | None = None
+    # Free-form text describing the project's tasks (spec + API agree this is a string).
+    tasks: str | None = None
     user: Reference | None = None
 
     # Read-only aggregates / timestamps.
     measurements_total: int | None = None
-    total_likes: int | None = None
+    # Collection of ProjectLike resources (IRIs / nested dicts), not a count.
+    total_likes: list[Reference] | None = None
     last_observation_datetime: datetime | None = None
     created_at: datetime | None = None
     updated_at: datetime | None = None

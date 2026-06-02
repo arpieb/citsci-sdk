@@ -14,7 +14,7 @@ def test_logs_in_on_first_request_and_sends_bearer_token():
         return_value=httpx.Response(201, json={"token": "jwt-1", "refresh_token": "ref-1"})
     )
     projects = respx.get(f"{BASE}/projects/1").mock(
-        return_value=httpx.Response(200, json={"id": 1, "name": "Birds"})
+        return_value=httpx.Response(200, json={"id": "1", "name": "Birds"})
     )
 
     with CitSciClient(email="me@example.com", password="pw") as client:
@@ -37,7 +37,7 @@ def test_refreshes_and_retries_once_on_401():
     get_project = respx.get(f"{BASE}/projects/1").mock(
         side_effect=[
             httpx.Response(401, json={"detail": "Expired JWT"}),
-            httpx.Response(200, json={"id": 1, "name": "Birds"}),
+            httpx.Response(200, json={"id": "1", "name": "Birds"}),
         ]
     )
     refresh = respx.post(f"{BASE}/token/refresh").mock(
@@ -48,7 +48,7 @@ def test_refreshes_and_retries_once_on_401():
         project = client.projects.get(1)
 
     assert refresh.called
-    assert project.id == 1
+    assert project.id == "1"
     assert get_project.call_count == 2
     # The retry used the freshly minted token.
     assert get_project.calls[-1].request.headers["Authorization"] == "Bearer jwt-2"
@@ -59,7 +59,7 @@ def test_falls_back_to_login_when_refresh_rejected():
     respx.get(f"{BASE}/projects/1").mock(
         side_effect=[
             httpx.Response(401, json={"detail": "Expired JWT"}),
-            httpx.Response(200, json={"id": 1, "name": "Birds"}),
+            httpx.Response(200, json={"id": "1", "name": "Birds"}),
         ]
     )
     refresh = respx.post(f"{BASE}/token/refresh").mock(
@@ -76,4 +76,4 @@ def test_falls_back_to_login_when_refresh_rejected():
 
     assert refresh.called
     assert login.called
-    assert project.id == 1
+    assert project.id == "1"
