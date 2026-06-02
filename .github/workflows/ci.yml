@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13", "3.14"]
+    # Official Astral image: uv + the matrix Python preinstalled.
+    container: ghcr.io/astral-sh/uv:python${{ matrix.python-version }}-trixie-slim
+    env:
+      # Use the image's Python instead of downloading a managed one.
+      UV_PYTHON_PREFERENCE: only-system
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: uv sync --extra dev --python ${{ matrix.python-version }}
+
+      - name: ruff check
+        run: uv run ruff check --output-format=github .
+
+      - name: ruff format --check
+        run: uv run ruff format --check .
+
+      - name: pytest
+        run: uv run pytest
